@@ -37,6 +37,10 @@ I updated the `subscriptionSlice.ts` to include two new Async Thunks:
 
 ---
 
+### 3. Styling Approach
+
+I utilized **Tailwind CSS** for the UI layout. I intentionally kept the design minimal and functional to prioritize robust state management, logical correctness, and clean code structure over complex visual aesthetics within the given timeframe.
+
 ## 🧠 Design Decisions & Reasoning
 
 ### Why I used `findIndex` instead of `filter` in the Reducer
