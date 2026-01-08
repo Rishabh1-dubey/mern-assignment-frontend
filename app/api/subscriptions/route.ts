@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-let subscriptions = [
-  { id: '1', status: 'active' },
-  { id: '2', status: 'cancelled' }
+const subscriptions = [
+  { id: "1", status: "active" },
+  { id: "2", status: "cancelled" },
 ];
 
 export async function GET() {
@@ -12,7 +12,7 @@ export async function GET() {
 export async function POST() {
   const newSub = {
     id: Date.now().toString(),
-    status: 'active'
+    status: "active",
   };
 
   subscriptions.push(newSub);
@@ -21,10 +21,10 @@ export async function POST() {
 }
 
 export async function PATCH() {
-  const active = subscriptions.find((s) => s.status === 'active');
+  const active = subscriptions.find((s) => s.status === "active");
 
   if (active) {
-    active.status = 'cancelled';
+    active.status = "cancelled";
   }
 
   return NextResponse.json(active ?? null);
