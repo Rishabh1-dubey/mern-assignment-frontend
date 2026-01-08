@@ -1,87 +1,73 @@
-# Frontend Assignment – State Management & Design Exercise
+# Frontend Assignment – Subscription Manager
 
-This repository contains a small, intentionally simplified Next.js + Redux example.
+This repository contains the solution for the Next.js + Redux state management exercise. The application manages a list of subscriptions, allowing users to add active subscriptions and cancel existing ones while maintaining state consistency with the backend API.
 
-The purpose of this exercise is to understand how you reason about state changes, data flow, and maintainability when working with an existing system.
+## 🚀 How to Run
 
----
+1.  **Install dependencies:**
 
-## Duration
-**45–60 minutes max** 
+    ```bash
+    npm install
+    ```
 
----
+2.  **Run the development server:**
 
-## What’s provided
-- A minimal Next.js app using the App Router
-- A Redux slice managing subscriptions
-- A mock backend API implemented using Next.js route handlers
+    ```bash
+    npm run dev
+    ```
 
----
-
-## API details (important)
-
-The backend API is already implemented and should be treated as **fixed**.
-
-### API code location
-/app/api/subscriptions/route.ts
-
-### API URL (when running locally)
-/api/subscriptions
-
-### API behavior
-- **GET /api/subscriptions**  
-  Returns the current list of subscriptions
-
-- **POST /api/subscriptions**  
-  Adds a new **active** subscription
-
-- **PATCH /api/subscriptions**  
-  Cancels one active subscription (if present)
-
-### Data storage
-The data is stored **in memory on the server** (module-level variable).
-
-This means:
-- Data resets when the dev server restarts
-- It is not persisted in a database
-- This is intentional for the purpose of the exercise
-
-Please do **not** modify the API code.
+3.  **Open the app:**
+    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## Your tasks (mandatory)
+## 🛠️ Implementation Details
 
-1. Review the existing frontend and state management logic.
-2. Add UI controls to:
-   - add an active subscription
-   - cancel a subscription
-3. Ensure the UI state stays consistent with the API responses.
-4. Identify and explain any **design or state-related issues** you notice.
+### 1. State Management (Redux)
 
-**Note:** Please ensure your code is well-documented with clear comments explaining your approach and any complex logic.
+I updated the `subscriptionSlice.ts` to include two new Async Thunks:
 
----
+- `addSubscription`: Dispatches a `POST` request to create a new subscription.
+- `cancelSubscription`: Dispatches a `PATCH` request to update an existing subscription's status.
 
-## Important note
+### 2. UI Improvements
 
-If you do not immediately notice any issues, try adding a way to  
-**cancel a specific subscription from the list**.
+- **Separated Lists:** Instead of showing a mixed list of "Active" and "Cancelled" items, I separated them into two distinct columns. This improves readability and allows the user to clearly see the history of cancelled items versus currently active plans.
+- **Dynamic Controls:** The "Cancel" button is automatically disabled when there are no active subscriptions (`activeCount === 0`) to prevent unnecessary API calls.
 
 ---
 
-## Guidelines
-- Minimal changes are preferred over large refactors.
-- There is no single correct solution.
-- Please explain *why* you made the changes you did.
-- You may update this README if required to document your changes.
+## 🧠 Design Decisions & Reasoning
+
+### Why I used `findIndex` instead of `filter` in the Reducer
+
+When a subscription is cancelled, the API returns the updated object with `{ status: 'cancelled' }` rather than deleting the record entirely.
+
+- **My Approach:** I used `findIndex` to locate the specific item in the Redux state array and updated its status.
+- **Reasoning:** If I had used `.filter()` to remove the item from the state, the UI would look correct momentarily. However, since the data still exists on the server, a page refresh would bring the item back. Updating the status ensures the **UI stays consistent with the actual server state**.
 
 ---
 
-## Submission
-- Fork this repository and share the link on email.
+## ⚠️ Identified API Design Issue
+
+As requested in the assignment ("Identify and explain any design or state-related issues"), I noticed a critical limitation in the backend API:
+
+**The Issue: Implicit Cancellation**
+The current cancellation endpoint (`PATCH /api/subscriptions`) does not accept an ID. It simply finds the _first_ available active subscription on the server and cancels it.
+
+**Why this is a problem:**
+From a User Experience (UX) perspective, this is unpredictable. If a user wants to cancel a specific subscription (e.g., Subscription #3), clicking "Cancel" might remove Subscription #1 instead. The user has no control over _which_ item gets cancelled.
+
+**Recommended Solution:**
+The API should be refactored to accept a unique identifier.
+
+- **Current:** `PATCH /api/subscriptions`
+- **Proposed:** `PATCH /api/subscriptions/:id` or accepting `{ id: string }` in the request body.
 
 ---
 
-## Optional
-If you had more time, briefly mention what you would improve next and why.
+## 📝 Project Structure
+
+- `/app/page.tsx`: Main UI component containing the buttons and list rendering logic.
+- `/lib/features/subscriptions/subscriptionSlice.ts`: Redux logic for handling API state.
+- `/app/api/subscriptions`: Mock backend API (treated as fixed).
