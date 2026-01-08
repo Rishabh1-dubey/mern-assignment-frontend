@@ -68,6 +68,6 @@ The API should be refactored to accept a unique identifier.
 
 ## 📝 Project Structure
 
-- `/app/page.tsx`: Main UI component containing the buttons and list rendering logic.
+- `/app/component/SubscriptionsTable.tsx`: Main UI component containing the buttons and list rendering logic.
 - `/lib/features/subscriptions/subscriptionSlice.ts`: Redux logic for handling API state.
 - `/app/api/subscriptions`: Mock backend API (treated as fixed).
